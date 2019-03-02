@@ -1,0 +1,41 @@
+{
+  "name": "bazar",
+  "version": "0.0.1",
+  "description": "State container",
+  "main": "dist/bazar.js",
+  "module": "dist/bazar.mjs",
+  "jsnext:main": "dist/bazar.mjs",
+  "umd:main": "dist/bazar.umd.js",
+  "unpkg": "dist/bazar.umd.js",
+  "scripts": {
+    "start": "microbundle src/bazar.mjs -w & browser-sync . --port 4000 -w --no-open",
+    "build": "microbundle src/bazar.mjs",
+    "build:dev": "microbundle src/bazar.mjs",
+    "lint": "eslint src/*.mjs test/*.js",
+    "lint-fix": "eslint src/*.mjs test/*.js --fix",
+    "test": "npm run build && mocha --timeout 20000 --recursive test",
+    "test:local": "browser-sync . --port 8080 --no-open & npm run build && mocha --timeout 20000 --recursive test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lucagez/bazar"
+  },
+  "author": "Luca Gesmundo <lucagesmundo@yahoo.it>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/lucagez/bazar/issues"
+  },
+  "homepage": "https://github.com/lucagez/bazar#readme",
+  "devDependencies": {
+    "babel-eslint": "^10.0.1",
+    "browser-sync": "^2.26.3",
+    "chai": "^4.2.0",
+    "eslint": "^5.15.0",
+    "eslint-config-airbnb-base": "^13.1.0",
+    "eslint-plugin-import": "^2.16.0",
+    "lodash": "^4.17.11",
+    "microbundle": "^0.9.0",
+    "mocha": "^5.2.0",
+    "puppeteer": "^1.12.2"
+  }
+}
