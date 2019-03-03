@@ -8,7 +8,7 @@
   "umd:main": "dist/bazar.umd.js",
   "unpkg": "dist/bazar.umd.js",
   "scripts": {
-    "start": "microbundle src/bazar.mjs -w & browser-sync . --port 4000 -w --no-open",
+    "start": "microbundle src/bazar.mjs -w & browser-sync . --port 4000 -w --no-open & cp dist/bazar.js dev/bazar.js",
     "build": "microbundle src/bazar.mjs",
     "build:dev": "microbundle src/bazar.mjs",
     "lint": "eslint src/*.mjs test/*.js",

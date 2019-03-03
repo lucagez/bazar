@@ -1,3 +1,20 @@
 module.exports = {
-    "extends": "airbnb-base"
+    "env": {
+        "browser": true,
+        "node": true,
+        "mocha": true
+    },
+    "extends": "airbnb-base",
+    "rules": {
+        "arrow-parens": "off",
+        "no-return-assign": "off",
+        "no-underscore-dangle": "off",
+        "no-param-reassign": "off",
+        "no-nested-ternary": "off",
+        "no-use-before-define": "off",
+        "no-restricted-globals": "off"
+    },
+    "globals": {
+        "_store_": true,
+    }
 };

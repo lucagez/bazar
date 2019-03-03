@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Dev</title>
+</head>
+
+<body>
+  <div id="root"></div>
+  <script type="module">
+    // import { register } from "../dist/bazar.js";
+  
+  </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/16.8.3/umd/react.development.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/16.8.3/umd/react-dom.development.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/6.26.0/babel.min.js"></script>
+
+  
+  <script type="text/babel">
+
+class C1 extends React.Component {
+  constructor() {
+    super();
+    this.state = {
+      count: 0,
+      secret: 'secret'
+    };
+
+    this.config = {
+      id: 'C1',
+      interests: ['C2'],
+      notifs: ['C2'],
+      handler: (states) => console.log('C1', states),
+      ignores: ['secret']
+    };
+
+    register(this.config, this.state);
+  }
+
+  render() {
+    const { count } = this.state;
+    return (
+      <div>
+        <h1>Component 1</h1>
+        <span>{count}</span>
+        <button onClick={() => this.setState({ count: count + 1 }, () => dispatch(this.config, this.state))}>increment</button>
+      </div>
+    );
+  }
+}
+
+class C2 extends React.Component {
+  constructor() {
+    super();
+    this.state = {
+      count: 0,
+      secret: 'secret'
+    };
+
+    this.config = {
+      id: 'C2',
+      interests: ['C1'],
+      notifs: ['C1'],
+      handler: (states) => {
+        const { C1 } = states;
+        this.setState({
+          count: this.state.count + 1
+        });
+      },
+    };
+
+    register(this.config, this.state);
+  }
+
+  render() {
+    const { count } = this.state;
+
+    return (
+      <div ref="mapContext">
+        <h1>Component 2</h1>
+        <span>{count}</span>
+        <button onClick={() => this.setState({ count: count + 1 })}>increment</button>
+      </div>
+    );
+  }
+}
+
+class App extends React.Component {
+  constructor() {
+    super();
+    this.state = {
+      data: [1, 2, 3]
+    };
+
+    this.context = 1;
+    console.log(this.context);
+    // initStore();
+    // console.log(_store_);
+  }
+  render() {
+    return (
+      <div className="App">
+        <h1>Parent (:</h1>
+        <C1 />
+        <C2 />
+      </div>
+    );
+  }
+}
+
+ReactDOM.render(<App />, document.querySelector('#root'));
+
+</script>
+
+</body>
+
+</html>
