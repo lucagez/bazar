@@ -1,34 +1,38 @@
 // File made for developing purpose
 
-const { Component, useState, useEffect } = React;
+const { Component } = React;
 const { initStore, register, dispatch } = bazar;
 
 initStore();
 
-const C1 = () => {
-  const [count, setCount] = useState(0);
-  const [isRegistered, setIsRegistered] = useState(false);
-  const config = {
-    id: 'C1',
-    interests: ['C2'],
-    notifs: ['C2'],
-    handler: (states) => console.log('C1', states)
-  };
+class C1 extends Component {
+  constructor() {
+    super();
+    this.state = {
+      count: 0,
+      secret: 'secret'
+    };
 
-  if (!isRegistered) {
-    register(config, count);
-    setIsRegistered(true);
-  };
+    this.config = {
+      id: 'C1',
+      interests: ['C2'],
+      notifs: ['C2'],
+      handler: (states) => console.log('C1', states),
+      ignores: ['secret']
+    };
+    register(this.config, this.state);
+  }
 
-  useEffect(() => { if (count > 0) dispatch(config, count) });
-
-  return (
-    <div>
-      <h3>Component 1</h3>
-      <span>{count}</span>
-      <button onClick={() => setCount(count + 1)}>increment</button>
-    </div>
-  );
+  render() {
+    const { count } = this.state;
+    return (
+      <div>
+        <h1>Component 1</h1>
+        <span>{count}</span>
+        <button onClick={() => this.setState({ count: count + 1 }, () => dispatch(this.config, this.state))}>increment</button>
+      </div>
+    );
+  }
 }
 
 class C2 extends Component {
@@ -58,8 +62,8 @@ class C2 extends Component {
     const { count } = this.state;
 
     return (
-      <div>
-        <h3>Component 2</h3>
+      <div ref="mapContext">
+        <h1>Component 2</h1>
         <span>{count}</span>
         <button onClick={() => this.setState({ count: count + 1 })}>increment</button>
       </div>

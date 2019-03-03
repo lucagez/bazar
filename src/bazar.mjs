@@ -1,8 +1,12 @@
 const dispatch = (config, state) => {
-  const { id, notifs, ignores = [] } = config;
+  const {
+    id,
+    notifs = [],
+    ignores = [],
+  } = config;
 
   const clone = typeof state === 'object'
-    ? Object.assign({}, state)
+    ? { ...state }
     : state;
 
   if (ignores.length > 0) {
@@ -20,6 +24,7 @@ const dispatch = (config, state) => {
   // execute effects
   notifs.forEach(notif => {
     const current = _store_[notif];
+    if (!current) throw new Error('Trying to notify a non-existent component');
 
     // creating states object
     const states = {};
@@ -42,7 +47,7 @@ const register = (config, state) => {
   } = config;
 
   if (!id) throw new Error('Expected registrar to have non-null id value');
-  // if (_store_.hasOwnPropery(id) !== -1) throw new Error('Expected unique id');
+  if (_store_.hasOwnProperty(id)) throw new Error('Expected unique id');
 
   const clone = Object.assign({}, state);
 
@@ -71,9 +76,6 @@ const initStore = () => {
         : {};
 
   context._store_ = {};
-  // (context => {
-  //   context._store_ = {};
-  // }).call(this, global);
 };
 
 export {

@@ -13,6 +13,7 @@
     "build:dev": "microbundle src/bazar.mjs",
     "lint": "eslint src/*.mjs test/*.js",
     "lint-fix": "eslint src/*.mjs test/*.js --fix",
+    "cypress:open": "cypress open",
     "test": "npm run build && mocha --timeout 20000 --recursive test",
     "test:local": "browser-sync . --port 8080 --no-open & npm run build && mocha --timeout 20000 --recursive test"
   },

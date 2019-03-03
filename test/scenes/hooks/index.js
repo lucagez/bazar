@@ -7,7 +7,6 @@ initStore();
 
 const C1 = () => {
   const [count, setCount] = useState(0);
-  const [isRegistered, setIsRegistered] = useState(false);
   const config = {
     id: 'C1',
     interests: ['C2'],
@@ -15,20 +14,18 @@ const C1 = () => {
     handler: (states) => console.log('C1', states)
   };
 
-  if (!isRegistered) {
-    register(config, count);
-    setIsRegistered(true);
-  };
+  register(config, count);
 
   useEffect(() => { if (count > 0) dispatch(config, count) });
 
   return (
     <div>
-      <h3>Component 1</h3>
+      <h1>Component 1</h1>
       <span>{count}</span>
       <button onClick={() => setCount(count + 1)}>increment</button>
     </div>
   );
+
 }
 
 class C2 extends Component {
@@ -58,8 +55,8 @@ class C2 extends Component {
     const { count } = this.state;
 
     return (
-      <div>
-        <h3>Component 2</h3>
+      <div ref="mapContext">
+        <h1>Component 2</h1>
         <span>{count}</span>
         <button onClick={() => this.setState({ count: count + 1 })}>increment</button>
       </div>

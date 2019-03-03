@@ -5,6 +5,12 @@ const { initStore, register, dispatch } = bazar;
 
 initStore();
 
+const Child = (props) => (
+  <div>
+
+  </div>
+);
+
 const C1 = () => {
   const [count, setCount] = useState(0);
   const [isRegistered, setIsRegistered] = useState(false);
@@ -31,42 +37,6 @@ const C1 = () => {
   );
 }
 
-class C2 extends Component {
-  constructor() {
-    super();
-    this.state = {
-      count: 0,
-      secret: 'secret'
-    };
-
-    this.config = {
-      id: 'C2',
-      interests: ['C1'],
-      notifs: ['C1'],
-      handler: (states) => {
-        const { C1 } = states;
-        this.setState({
-          count: this.state.count + 1
-        });
-      },
-    };
-
-    register(this.config, this.state);
-  }
-
-  render() {
-    const { count } = this.state;
-
-    return (
-      <div>
-        <h3>Component 2</h3>
-        <span>{count}</span>
-        <button onClick={() => this.setState({ count: count + 1 })}>increment</button>
-      </div>
-    );
-  }
-}
-
 class App extends Component {
   constructor() {
     super();
@@ -79,7 +49,7 @@ class App extends Component {
       <div className="App">
         <h1>Parent (:</h1>
         <C1 />
-        <C2 />
+        {/* <C2 /> */}
       </div>
     );
   }

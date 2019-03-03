@@ -12,9 +12,11 @@ module.exports = {
         "no-param-reassign": "off",
         "no-nested-ternary": "off",
         "no-use-before-define": "off",
-        "no-restricted-globals": "off"
+        "no-restricted-globals": "off",
+        "no-prototype-builtins": "off"
     },
     "globals": {
         "_store_": true,
+        "browser": true
     }
 };
