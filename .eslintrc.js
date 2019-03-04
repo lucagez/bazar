@@ -13,7 +13,8 @@ module.exports = {
         "no-nested-ternary": "off",
         "no-use-before-define": "off",
         "no-restricted-globals": "off",
-        "no-prototype-builtins": "off"
+        "no-prototype-builtins": "off",
+        "curly": "off"
     },
     "globals": {
         "_BAZAR_STORE_": true,

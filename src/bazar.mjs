@@ -20,14 +20,16 @@ const dispatch = config => {
 const register = config => {
   const {
     id,
+    sync,
+    handler,
     notifs = [],
     interests = [],
-    handler = undefined,
-    sync = undefined,
   } = config;
 
   if (!id) throw new Error('Expected registrant to have non-null id value');
+  if (!sync) throw new Error('Expected registrant to have a sync function');
   if (_BAZAR_STORE_.hasOwnProperty(id)) throw new Error('Expected unique id');
+
 
   // create snapshop in global
   _BAZAR_STORE_[id] = {
@@ -38,7 +40,9 @@ const register = config => {
   };
 };
 
-const initStore = () => {
+const initState = id => (_BAZAR_STORE_.initial || {})[id];
+
+const initStore = (states = {}) => {
   const context = typeof global !== 'undefined'
     ? global
     : typeof self !== 'undefined'
@@ -48,10 +52,17 @@ const initStore = () => {
         : {};
 
   context._BAZAR_STORE_ = {};
+  _BAZAR_STORE_.initial = {};
+
+  const initials = Object.keys(states);
+  if (initials.length > 0) initials.forEach(id => {
+    _BAZAR_STORE_.initial[id] = states[id];
+  });
 };
 
 export {
   initStore,
+  initState,
   register,
   dispatch,
 };

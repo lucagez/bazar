@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 
 // importing bazar
-import { initStore, register, dispatch } from '../../../dist/bazar';
+import { initStore, initState, register, dispatch } from '../../../dist/bazar';
 
 class C3 extends Component {
   constructor() {
@@ -33,7 +33,7 @@ class C1 extends Component {
   constructor() {
     super();
     this.state = {
-      count: 0,
+      count: initState('C1') || 0,
       secret: 'secret'
     };
 
@@ -43,9 +43,9 @@ class C1 extends Component {
       notifs: ['C2'],
       sync: () => this.state,
       handler: (states) => console.log('C1', states),
-      ignores: ['secret']
     };
-    register(this.config, this.state);
+
+    register(this.config);
   }
 
   render() {
@@ -82,7 +82,7 @@ class C2 extends Component {
       },
     };
 
-    register(this.config, this.state);
+    register(this.config);
   }
 
   render() {
@@ -105,7 +105,10 @@ class App extends Component {
       data: [1, 2, 3]
     };
 
-    initStore();
+    initStore({
+      C1: 3,
+      C2: 4
+    });
   }
   render() {
     return (
