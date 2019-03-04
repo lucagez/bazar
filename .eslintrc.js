@@ -16,7 +16,7 @@ module.exports = {
         "no-prototype-builtins": "off"
     },
     "globals": {
-        "_store_": true,
+        "_BAZAR_STORE_": true,
         "browser": true
     }
 };

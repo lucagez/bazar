@@ -54,7 +54,7 @@ class C1 extends Component {
       <div>
         <h1>Component 1</h1>
         <span>{count}</span>
-        <button onClick={() => this.setState({ count: count + 1 }, () => dispatch(this.config, this.state))}>increment</button>
+        <button onClick={() => this.setState({ count: count + 1 }, () => dispatch(this.config))}>increment</button>
       </div>
     );
   }

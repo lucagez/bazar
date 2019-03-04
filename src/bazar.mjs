@@ -1,35 +1,15 @@
-const dispatch = (config, state) => {
-  const {
-    id,
-    notifs = [],
-    ignores = [],
-  } = config;
-
-  const clone = typeof state === 'object'
-    ? { ...state }
-    : state;
-
-  if (ignores.length > 0) {
-    ignores.forEach(ignore => {
-      delete clone[ignore];
-    });
-  }
-
-  // update global store
-  _store_[id] = {
-    ..._store_[id],
-    state: clone,
-  };
+const dispatch = config => {
+  const { notifs = [] } = config;
 
   // execute effects
   notifs.forEach(notif => {
-    const current = _store_[notif];
+    const current = _BAZAR_STORE_[notif];
     if (!current) throw new Error('Trying to notify a non-existent component');
 
     // creating states object
     const states = {};
     current.interests
-      .forEach(interest => states[interest] = _store_[interest].sync());
+      .forEach(interest => states[interest] = _BAZAR_STORE_[interest].sync());
 
     // pass states to avoid reading from global
     // avoid expose global object
@@ -37,34 +17,24 @@ const dispatch = (config, state) => {
   });
 };
 
-const register = (config, state) => {
+const register = config => {
   const {
     id,
     notifs = [],
     interests = [],
-    ignores = [],
     handler = undefined,
     sync = undefined,
   } = config;
 
-  if (!id) throw new Error('Expected registrar to have non-null id value');
-  if (_store_.hasOwnProperty(id)) throw new Error('Expected unique id');
-
-  const clone = Object.assign({}, state);
-
-  if (ignores.length > 0) {
-    ignores.forEach(ignore => {
-      delete clone[ignore];
-    });
-  }
+  if (!id) throw new Error('Expected registrant to have non-null id value');
+  if (_BAZAR_STORE_.hasOwnProperty(id)) throw new Error('Expected unique id');
 
   // create snapshop in global
-  _store_[id] = {
+  _BAZAR_STORE_[id] = {
     notifs,
     interests,
     handler,
     sync,
-    state: clone,
   };
 };
 
@@ -77,7 +47,7 @@ const initStore = () => {
         ? window
         : {};
 
-  context._store_ = {};
+  context._BAZAR_STORE_ = {};
 };
 
 export {
