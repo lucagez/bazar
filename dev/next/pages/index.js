@@ -36,7 +36,7 @@ class C1 extends Component {
       count: initState('C1') || 0,
       secret: 'secret'
     };
-
+    
     this.config = {
       id: 'C1',
       interests: ['C2'],
@@ -44,7 +44,7 @@ class C1 extends Component {
       sync: () => this.state,
       handler: (states) => console.log('C1', states),
     };
-
+    
     register(this.config);
   }
 
@@ -110,6 +110,7 @@ class App extends Component {
       C2: 4
     });
   }
+
   render() {
     return (
       <div className="App">
