@@ -1,10 +1,20 @@
 const dispatch = config => {
-  const { notifs = [] } = config;
+  const { id } = config;
+
+  const notifs = [];
+
+  // preferring forEach over a more functional .filter followed by .map
+  // to keep O(n) time complexity when looping through a large store
+  Object.keys(_BAZAR_STORE_)
+    .forEach(currentId => {
+      if ((_BAZAR_STORE_[currentId].interests || []).indexOf(id) !== -1) {
+        notifs.push(currentId);
+      }
+    });
 
   // execute effects
   notifs.forEach(notif => {
     const current = _BAZAR_STORE_[notif];
-    if (!current) throw new Error(`Trying to notify ${notif}, a non-existent component`);
 
     const { interests, handler } = current;
     if (!handler) throw new Error(`Attempted trigger of undefined handler on ${notif}`);
@@ -25,8 +35,7 @@ const register = config => {
     id,
     sync,
     handler,
-    notifs = [],
-    interests = [],
+    interests,
   } = config;
 
   if (!id) throw new Error('Expected registrant to have non-null id value');
@@ -35,7 +44,6 @@ const register = config => {
 
   // create snapshop in global
   _BAZAR_STORE_[id] = {
-    notifs,
     interests,
     handler,
     sync,
@@ -45,6 +53,7 @@ const register = config => {
 const initState = id => (_BAZAR_STORE_.initial || {})[id];
 
 const initStore = (states = {}) => {
+  // Evaluating the global execution context
   const context = typeof global !== 'undefined'
     ? global
     : typeof self !== 'undefined'
@@ -54,8 +63,9 @@ const initStore = (states = {}) => {
         : {};
 
   context._BAZAR_STORE_ = {};
-  _BAZAR_STORE_.initial = {};
 
+  // setting up an initial store containing optional initial states
+  _BAZAR_STORE_.initial = {};
   const initials = Object.keys(states);
   if (initials.length > 0) initials.forEach(id => {
     _BAZAR_STORE_.initial[id] = states[id];

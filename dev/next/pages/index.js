@@ -40,7 +40,6 @@ class C1 extends Component {
     this.config = {
       id: 'C1',
       interests: ['C2'],
-      notifs: ['C2'],
       sync: () => this.state,
       handler: (states) => console.log('C1', states),
     };
@@ -71,7 +70,6 @@ class C2 extends Component {
     this.config = {
       id: 'C2',
       interests: ['C1', 'C3'],
-      notifs: ['C1'],
       sync: () => this.state,
       handler: (states) => {
         const { C1, C3 } = states;
