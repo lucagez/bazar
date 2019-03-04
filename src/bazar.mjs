@@ -4,10 +4,10 @@ const dispatch = config => {
   // execute effects
   notifs.forEach(notif => {
     const current = _BAZAR_STORE_[notif];
-
-    if (!current) throw new Error('Trying to notify a non-existent component');
+    if (!current) throw new Error(`Trying to notify ${notif}, a non-existent component`);
 
     const { interests, handler } = current;
+    if (!handler) throw new Error(`Attempted trigger of undefined handler on ${notif}`);
 
     // creating states object
     const states = {};
@@ -16,7 +16,7 @@ const dispatch = config => {
 
     // pass states to avoid reading from global
     // avoid expose global object
-    if (handler) handler(states);
+    handler(states);
   });
 };
 
