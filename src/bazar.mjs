@@ -29,7 +29,7 @@ const dispatch = (config, state) => {
     // creating states object
     const states = {};
     current.interests
-      .forEach(interest => states[interest] = _store_[interest].state);
+      .forEach(interest => states[interest] = _store_[interest].sync());
 
     // pass states to avoid reading from global
     // avoid expose global object
@@ -44,6 +44,7 @@ const register = (config, state) => {
     interests = [],
     ignores = [],
     handler = undefined,
+    sync = undefined,
   } = config;
 
   if (!id) throw new Error('Expected registrar to have non-null id value');
@@ -62,6 +63,7 @@ const register = (config, state) => {
     notifs,
     interests,
     handler,
+    sync,
     state: clone,
   };
 };
