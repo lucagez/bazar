@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <title>Dev</title>
+  <title>Test</title>
 
 </head>
 
@@ -17,10 +17,32 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/16.8.3/umd/react-dom.development.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/6.26.0/babel.min.js"></script>
 
-  <script type="text/babel" src="./index.js"></script>
+  <script type="text/babel">
+    // File made for testing purpose
 
-  <script>
-    // const { initStore, register, dispatch } = bazar;
+const { Component } = React;
+const { initStore, register, notify } = bazar;
+
+class App extends Component {
+  constructor() {
+    super();
+    this.state = {};
+
+    initStore();
+  }
+
+  render() {
+    return (
+      <div className="App">
+        <h1>Parent (:</h1>
+      </div>
+    );
+  }
+}
+
+
+ReactDOM.render(<App />, document.getElementById('root'));
+
   </script>
 </body>
 

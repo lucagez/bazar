@@ -18,6 +18,8 @@ module.exports = {
     },
     "globals": {
         "_BAZAR_STORE_": true,
-        "browser": true
+        "bazar": true,
+        "browser": true,
+        "expect": true
     }
 };

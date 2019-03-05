@@ -1,0 +1,138 @@
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Test</title>
+
+</head>
+
+<body>
+  <div id="root"></div>
+  <script src="../../dist/bazar.umd.js"></script>
+
+  <!-- dependencies -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/16.8.3/umd/react.development.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/16.8.3/umd/react-dom.development.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/6.26.0/babel.min.js"></script>
+
+  <script type="text/babel">
+    // File made for testing purpose
+
+const { Component } = React;
+const { initStore, register, notify } = bazar;
+
+class C3 extends Component {
+  constructor() {
+    super();
+    this.state = {
+      count: 0,
+    };
+
+    this.config = {
+      id: 'C3',
+      sync: () => this.state
+    };
+    register(this.config, this.state);
+  }
+
+  render() {
+    const { count } = this.state;
+    return (
+      <div>
+        <h1>Component 3</h1>
+        <span>{count}</span>
+        <button onClick={() => this.setState({ count: count + 1 })}>increment</button>
+      </div>
+    );
+  }
+}
+
+class C1 extends Component {
+  constructor() {
+    super();
+    this.state = {
+      count: 0,
+      secret: 'secret'
+    };
+
+    this.config = {
+      id: 'C1',
+      interests: ['C2'],
+      sync: () => this.state,
+      handler: (id, states) => window.test = id,
+    };
+
+    register(this.config);
+  }
+
+  render() {
+    const { count } = this.state;
+    return (
+      <div>
+        <h1>Component 1</h1>
+        <span>{count}</span>
+        <button id="testClick" onClick={() => this.setState({ count: count + 1 }, () => notify(this.config))}>increment</button>
+      </div>
+    );
+  }
+}
+
+class C2 extends Component {
+  constructor() {
+    super();
+    this.state = {
+      count: 0,
+      secret: 'secret'
+    };
+
+    this.config = {
+      id: 'C2',
+      interests: ['C1', 'C3'],
+      sync: () => this.state,
+    };
+
+    register(this.config);
+  }
+
+  render() {
+    const { count } = this.state;
+
+    return (
+      <div>
+        <h1>Component 2</h1>
+        <span>{count}</span>
+        <button onClick={() => this.setState({ count: count + 1 })}>increment</button>
+      </div>
+    );
+  }
+}
+
+class App extends Component {
+  constructor() {
+    super();
+    this.state = {};
+
+    initStore();
+  }
+
+  render() {
+    return (
+      <div className="App">
+        <h1>Parent (:</h1>
+        <C1 />
+        <C2 />
+        <C3 />
+      </div>
+    );
+  }
+}
+
+
+ReactDOM.render(<App />, document.getElementById('root'));
+
+  </script>
+</body>
+
+</html>

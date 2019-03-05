@@ -1,0 +1,20 @@
+language: node_js
+sudo: required
+node_js:
+  - node
+
+cache: npm
+
+before_install:
+  - chmod +x start_server.sh
+
+before_script:
+  - './start_server.sh'
+
+script:
+  - npm run lint
+  - npm test
+
+notifications:
+  email:
+    on_failure: change
