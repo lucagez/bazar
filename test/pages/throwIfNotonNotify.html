@@ -61,7 +61,7 @@ class C1 extends Component {
       id: 'C1',
       interests: ['C2'],
       sync: () => this.state,
-      handler: (id, states) => window.test = id,
+      onNotify: (id, states) => window.test = id,
     };
 
     register(this.config);
@@ -91,12 +91,6 @@ class C2 extends Component {
       id: 'C2',
       interests: ['C1', 'C3'],
       sync: () => this.state,
-      handler: (id, state) => {
-        window.test = id,
-        this.setState({
-          count: state.count
-        });
-      },
     };
 
     register(this.config);

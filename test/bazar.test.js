@@ -120,8 +120,8 @@ describe('Bazar tests', async () => {
       .to.be.equal('config object is required to correctly notify a state update');
   });
 
-  it('Should invoke handler if a component send a notification', async () => {
-    await page.goto(`${server}/notifyInvokeHandler.html`, {
+  it('Should invoke onNotify if a component send a notification', async () => {
+    await page.goto(`${server}/notifyInvokeonNotify.html`, {
       waitUntil: 'networkidle0',
     });
 
@@ -136,10 +136,10 @@ describe('Bazar tests', async () => {
     expect(test).to.be.equal('C1');
   });
 
-  it('Should throw if a handler is invoked but undefined', async () => {
+  it('Should throw if onNotify is invoked but undefined', async () => {
     const errors = [];
     page.on('pageerror', err => errors.push(err));
-    await page.goto(`${server}/throwIfNotHandler.html`, {
+    await page.goto(`${server}/throwIfNotonNotify.html`, {
       waitUntil: 'networkidle0',
     });
 
@@ -148,8 +148,8 @@ describe('Bazar tests', async () => {
     await sleep(1000);
 
     expect(errors[0]).to.be.an('error');
-    expect(errors[0].message.match('Attempted trigger of undefined handler on')[0])
-      .to.be.equal('Attempted trigger of undefined handler on');
+    expect(errors[0].message.match('Attempted trigger of undefined onNotify')[0])
+      .to.be.equal('Attempted trigger of undefined onNotify');
   });
 
   it('Should return a single state if getState is invoked', async () => {

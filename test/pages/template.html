@@ -63,7 +63,8 @@ class C1 extends Component {
       id: 'C1',
       interests: ['C2'],
       sync: () => this.state,
-      handler: (states) => console.log('C1', states),
+      onNotify: (states) => console.log('C1', states),
+      onPoke: (arg) => console.log(this.config.id, this.state, arg)
     };
 
     register(this.config);
@@ -93,7 +94,7 @@ class C2 extends Component {
       id: 'C2',
       interests: ['C1', 'C3'],
       sync: () => this.state,
-      handler: (id, state) => {
+      onNotify: (id, state) => {
         this.setState({
           count: state.count
         });

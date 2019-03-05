@@ -10,13 +10,13 @@
  * @param {Function} sync - REQUIRED. Where you return which part of the local state you want
  *  to expose in the global store.
  * @param {array} interests - OPTIONAL. Array of watched IDs. When any of the ID notify,
- *  the `handler` function is invoked.
- * @param {Function} handler - OPTIONAL. Function invoked when any of the IDs specified in
+ *  the `onNotify` function is invoked.
+ * @param {Function} onNotify - OPTIONAL. Function invoked when any of the IDs specified in
  *  `interests` notify an update. It is invoked with (id, state) as arguments. So you can
  *  update your local state accordingly to avoid unnecessary re-renders.
  */
 
-// Looping through global store and invoking `handler` on every element that expressed an interest
+// Looping through global store and invoking `onNotify` on every element that expressed an interest
 // on the ID that provoked a notification.
 const notify = config => {
   if (!config) throw new Error('config object is required to correctly notify a state update');
@@ -33,11 +33,11 @@ const notify = config => {
       if ((_BAZAR_STORE_[currentId].interests || []).indexOf(id) !== -1) {
         const current = _BAZAR_STORE_[currentId];
 
-        const { handler } = current;
-        if (!handler) throw new Error(`Attempted trigger of undefined handler on ${currentId}`);
+        const { onNotify } = current;
+        if (!onNotify) throw new Error(`Attempted trigger of undefined onNotify function on ${currentId}`);
 
         // Directly passing id and state at component level to avoid reading from global
-        handler(id, state);
+        onNotify(id, state);
       }
     });
 };
@@ -50,7 +50,8 @@ const register = config => {
   const {
     id,
     sync,
-    handler,
+    onPoke,
+    onNotify,
     interests,
   } = config;
 
@@ -60,17 +61,19 @@ const register = config => {
 
   // Creating instance
   _BAZAR_STORE_[id] = {
-    interests,
-    handler,
     sync,
+    onPoke,
+    onNotify,
+    interests,
   };
 };
 
-// const poke = id => {
-//   const { onPoke } = (_BAZAR_STORE_[id] || {});
-//   if (!onPoke) throw new Error(`Attempted to poke ${id}, component without a poke function`);
-//   onPoke();
-// };
+// The poke function let's you `poke` registered components with a valid `onPoke` function.
+const poke = (id, arg) => {
+  const { onPoke } = (_BAZAR_STORE_[id] || {});
+  if (!onPoke) throw new Error('Attempted to poke component without an onPoke function');
+  onPoke(arg);
+};
 
 // Safely reading synced state drom one ID.
 const getState = id => {
@@ -123,4 +126,5 @@ export {
   getStates,
   register,
   notify,
+  poke,
 };
