@@ -66,6 +66,12 @@ const register = config => {
   };
 };
 
+// const poke = id => {
+//   const { onPoke } = (_BAZAR_STORE_[id] || {});
+//   if (!onPoke) throw new Error(`Attempted to poke ${id}, component without a poke function`);
+//   onPoke();
+// };
+
 // Safely reading synced state drom one ID.
 const getState = id => {
   if (!_BAZAR_STORE_.hasOwnProperty(id)) throw new Error(`Attempted reading state from ${id}, non-registered component`);

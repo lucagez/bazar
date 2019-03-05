@@ -1,6 +1,6 @@
 {
   "name": "bazar",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "State container",
   "main": "dist/bazar.js",
   "module": "dist/bazar.mjs",
@@ -8,6 +8,7 @@
   "umd:main": "dist/bazar.umd.js",
   "unpkg": "dist/bazar.umd.js",
   "scripts": {
+    "deploy": "npm run build && npm publish",
     "start": "microbundle src/bazar.mjs -w & browser-sync . --port 4000 -w --no-open",
     "build": "microbundle src/bazar.mjs --no-sourcemap",
     "build:dev": "microbundle src/bazar.mjs",
