@@ -4,18 +4,20 @@ const dispatch = config => {
   // Array of IDs to notify for the state change just dispatched.
   const notifs = [];
 
+  const t1 = Date.now();
   // preferring forEach over a more functional .filter followed by .map
   // to keep O(n) time complexity when looping through a large store.
   Object.keys(_BAZAR_STORE_)
-    .forEach(async currentId => new Promise(resolve => {
+    .forEach(currentId => {
       // Safely accessing store[id].interests.
       // Looping through IDs to check all the components that expressed interest in
       // the state change.
       if ((_BAZAR_STORE_[currentId].interests || []).indexOf(id) !== -1) {
         notifs.push(currentId);
       }
-      resolve();
-    }));
+    });
+
+
 
   // execute effects
   notifs.forEach(notif => {
@@ -32,7 +34,9 @@ const dispatch = config => {
     // Directly passing states at component level to avoid reading from global
     handler(states);
   });
+  console.log(Date.now() - t1);
 };
+
 
 // Registering a new component in the global store.
 // Make sure that `register` function runs only one time per registered component.

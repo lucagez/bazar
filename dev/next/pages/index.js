@@ -3,6 +3,55 @@ import React, { Component } from 'react'
 // importing bazar
 import { initStore, initState, register, dispatch } from '../../../dist/bazar';
 
+const randInt = (min, max) => Math.floor(Math.random() * (max - min) + min);
+
+class C extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      count: randInt(0, 10),
+    };
+
+    const { id } = this.props;
+
+    const interests = [];
+    let i = 0;
+    for (; ;) {
+      if (i === 30) break;
+      interests.push(`C${randInt(0, 999)}`);
+      i++;
+    }
+    interests.push(`C${id + 1}`);
+
+    this.config = {
+      id: `C${id}`,
+      interests,
+      sync: () => this.state,
+      handler: states => {
+        const sum = Object.keys(states)
+          .map(state => states[state].count)
+          .reduce((a, b) => a + b);
+        // console.log(sum);
+        this.setState({ count: sum });
+      }
+    };
+    register(this.config, this.state);
+  }
+
+  render() {
+    const { count } = this.state;
+    return (
+      <div>
+        <h1>Component {this.props.id}</h1>
+        <span>{count}</span>
+        <button onClick={() => this.setState({ count: count + 1 }, () => {
+          dispatch(this.config);
+        })}>increment</button>
+      </div>
+    );
+  }
+}
+
 class C3 extends Component {
   constructor() {
     super();
@@ -99,8 +148,17 @@ class C2 extends Component {
 class App extends Component {
   constructor() {
     super();
+
+    const data = [];
+    let i = 0;
+    for (; ;) {
+      if (i === 10000) break;
+      data.push(i);
+      i++;
+    }
+
     this.state = {
-      data: [1, 2, 3]
+      data,
     };
 
     initStore({
@@ -112,12 +170,11 @@ class App extends Component {
   render() {
     return (
       <div className="App">
-        <button onClick={() => {
-          this.setState({ data: [1, 2, 4] });
-        }}>Parent (:</button>
-        <C1 />
-        <C2 count={0} />
-        <C3 />
+        <h1>Parent (:</h1>
+        {/* <C1 />
+        <C2 />
+        <C3 /> */}
+        {this.state.data.map((e, i) => <C key={i} id={e} />)}
       </div>
     );
   }
