@@ -1,10 +1,28 @@
-const dispatch = config => {
-  const { id } = config;
+/**
+ *
+ * CONFIG:
+ * `config` object is the fundamental part of `bazar`.
+ *  It stores the required connections to notify events to the correct elements
+ *  and syncing state from every part of your application.
+ *  The composing parts of `config` object are:
+ * @param {string} id - REQUIRED. Must be unique. Defines, in the global store, the
+ *  reference of the element when you register or notify.
+ * @param {Function} sync - REQUIRED. Where you return which part of the local state you want
+ *  to expose in the global store.
+ * @param {array} interests - OPTIONAL. Array of watched IDs. When any of the ID notify,
+ *  the `handler` function is invoked.
+ * @param {Function} handler - OPTIONAL. Function invoked when any of the IDs specified in
+ *  `interests` notify an update. It is invoked with (id, state) as arguments. So you can
+ *  update your local state accordingly to avoid unnecessary re-renders.
+ */
 
-  // Array of IDs to notify for the state change just dispatched.
-  const notifs = [];
+// Looping through global store and invoking `handler` on every element that expressed an interest
+// on the ID that provoked a notification.
+const notify = config => {
+  if (!config) throw new Error('config object is required to correctly notify a state update');
+  const { id, sync } = config;
+  const state = sync();
 
-  const t1 = Date.now();
   // preferring forEach over a more functional .filter followed by .map
   // to keep O(n) time complexity when looping through a large store.
   Object.keys(_BAZAR_STORE_)
@@ -13,30 +31,16 @@ const dispatch = config => {
       // Looping through IDs to check all the components that expressed interest in
       // the state change.
       if ((_BAZAR_STORE_[currentId].interests || []).indexOf(id) !== -1) {
-        notifs.push(currentId);
+        const current = _BAZAR_STORE_[currentId];
+
+        const { handler } = current;
+        if (!handler) throw new Error(`Attempted trigger of undefined handler on ${currentId}`);
+
+        // Directly passing id and state at component level to avoid reading from global
+        handler(id, state);
       }
     });
-
-
-
-  // execute effects
-  notifs.forEach(notif => {
-    const current = _BAZAR_STORE_[notif];
-
-    const { interests, handler } = current;
-    if (!handler) throw new Error(`Attempted trigger of undefined handler on ${notif}`);
-
-    // creating states object
-    const states = {};
-    interests
-      .forEach(interest => states[interest] = _BAZAR_STORE_[interest].sync());
-
-    // Directly passing states at component level to avoid reading from global
-    handler(states);
-  });
-  console.log(Date.now() - t1);
 };
-
 
 // Registering a new component in the global store.
 // Make sure that `register` function runs only one time per registered component.
@@ -60,6 +64,23 @@ const register = config => {
     handler,
     sync,
   };
+};
+
+// Safely reading synced state drom one ID.
+const getState = id => {
+  if (!_BAZAR_STORE_.hasOwnProperty(id)) throw new Error(`Attempted reading state from ${id}, non-registered component`);
+  return _BAZAR_STORE_[id].sync();
+};
+
+// Safely reading synced state drom multiple IDs.
+// Returns an handy object containing states grouped by ID.
+const getStates = arr => {
+  const states = {};
+  arr.forEach(id => {
+    if (!_BAZAR_STORE_.hasOwnProperty(id)) throw new Error(`Attempted reading state from ${id}, non-registered component`);
+    states[id] = _BAZAR_STORE_[id].sync();
+  });
+  return states;
 };
 
 // Safely reading initial state. Returns undefined if no initial state is defined
@@ -92,6 +113,8 @@ const initStore = (states = {}) => {
 export {
   initStore,
   initState,
+  getState,
+  getStates,
   register,
-  dispatch,
+  notify,
 };

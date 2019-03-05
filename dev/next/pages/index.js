@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 
 // importing bazar
-import { initStore, initState, register, dispatch } from '../../../dist/bazar';
+import { initStore, initState, register, notify, getState, getStates } from '../../../dist/bazar';
 
 const randInt = (min, max) => Math.floor(Math.random() * (max - min) + min);
 
@@ -27,12 +27,9 @@ class C extends Component {
       id: `C${id}`,
       interests,
       sync: () => this.state,
-      handler: states => {
-        const sum = Object.keys(states)
-          .map(state => states[state].count)
-          .reduce((a, b) => a + b);
-        // console.log(sum);
-        this.setState({ count: sum });
+      handler: (id, state) => {
+        // console.log(id, state.count);
+        this.setState({ count: this.state.count + 1 });
       }
     };
     register(this.config, this.state);
@@ -44,9 +41,13 @@ class C extends Component {
       <div>
         <h1>Component {this.props.id}</h1>
         <span>{count}</span>
-        <button onClick={() => this.setState({ count: count + 1 }, () => {
-          dispatch(this.config);
-        })}>increment</button>
+        <button onClick={() => {
+          this.setState({ count: count + 1 }, () => {
+            notify(this.config);
+          });
+          const { C9263, C63, C92, C9262 } = getStates(['C9263', 'C63', 'C92', 'C9262']);
+          console.log(C9263, C63, C92, C9262);
+        }}>increment</button>
       </div>
     );
   }
