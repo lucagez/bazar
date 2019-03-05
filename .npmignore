@@ -1,0 +1,6 @@
+dev/
+test/
+
+.travis.yml
+start_server.sh
+.eslintignore
