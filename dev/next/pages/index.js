@@ -36,14 +36,14 @@ class C1 extends Component {
       count: initState('C1') || 0,
       secret: 'secret'
     };
-    
+
     this.config = {
       id: 'C1',
       interests: ['C2'],
       sync: () => this.state,
       handler: (states) => console.log('C1', states),
     };
-    
+
     register(this.config);
   }
 
@@ -60,10 +60,10 @@ class C1 extends Component {
 }
 
 class C2 extends Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.state = {
-      count: 0,
+      count: this.props.count || 0,
       secret: 'secret'
     };
 
@@ -104,7 +104,7 @@ class App extends Component {
     };
 
     initStore({
-      C1: 3,
+      C1: this.state.data[2],
       C2: 4
     });
   }
@@ -112,9 +112,11 @@ class App extends Component {
   render() {
     return (
       <div className="App">
-        <h1>Parent (:</h1>
+        <button onClick={() => {
+          this.setState({ data: [1, 2, 4] });
+        }}>Parent (:</button>
         <C1 />
-        <C2 />
+        <C2 count={0} />
         <C3 />
       </div>
     );
