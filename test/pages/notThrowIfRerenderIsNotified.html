@@ -21,7 +21,7 @@
     // File made for testing purpose
 
 const { Component } = React;
-const { initStore, register, notify, getStates } = bazar;
+const { initStore, register, notify } = bazar;
 
 class C1 extends Component {
   constructor() {
@@ -58,7 +58,9 @@ class C2 extends Component {
     };
 
     this.config = {
-      id: 'C2',
+      id: 'C1',
+      sync: () => this.state,
+      willRerender: true,
     };
 
     register(this.config);
@@ -83,8 +85,6 @@ class App extends Component {
 
     initStore();
   }
-
-  componentDidMount = () => getStates(['C1', 'C2']);
 
   render() {
     return (

@@ -18,9 +18,9 @@
 
 // Looping through global store and invoking `onNotify` on every element that expressed an interest
 // on the ID that provoked a notification.
-const notify = config => {
-  if (!config) throw new Error('config object is required to correctly notify a state update');
-  const { id, sync } = config;
+const notify = id => {
+  const { sync } = _BAZAR_STORE_[id];
+  if (!sync) throw new Error('Sync is required to notify a state update');
   const state = sync();
 
   // preferring forEach over a more functional .filter followed by .map
@@ -34,7 +34,7 @@ const notify = config => {
         const current = _BAZAR_STORE_[currentId];
 
         const { onNotify } = current;
-        if (!onNotify) throw new Error(`Attempted trigger of undefined onNotify function on ${currentId}`);
+        if (!onNotify) throw new Error(`Triggering undefined onNotify on ${currentId}`);
 
         // Directly passing id and state at component level to avoid reading from global
         onNotify(id, state);
@@ -47,49 +47,26 @@ const notify = config => {
 // Otherwise an error of `Expected unique ID` will be thrown.
 // e.g. in a React component: Call `register` in the `constructor` method.
 const register = config => {
-  const {
-    id,
-    sync,
-    onPoke,
-    onNotify,
-    interests,
-  } = config;
+  const { id, willRerender = false } = config;
 
-  if (!id) throw new Error('Expected registrant to have non-null id value');
-  if (!sync) throw new Error('Expected registrant to have a sync function');
-  if (_BAZAR_STORE_.hasOwnProperty(id)) throw new Error('Expected unique id');
+  if (!id) throw new Error('Expected non-null id');
+  if (_BAZAR_STORE_.hasOwnProperty(id) && !willRerender) throw new Error('Expected unique id');
 
   // Creating instance
-  _BAZAR_STORE_[id] = {
-    sync,
-    onPoke,
-    onNotify,
-    interests,
-  };
+  _BAZAR_STORE_[id] = { ...config };
 };
 
 // The poke function let's you `poke` registered components with a valid `onPoke` function.
 const poke = (id, arg) => {
   const { onPoke } = (_BAZAR_STORE_[id] || {});
-  if (!onPoke) throw new Error('Attempted to poke component without an onPoke function');
+  if (!onPoke) throw new Error('Poking component without onPoke method');
   onPoke(arg);
 };
 
-// Safely reading synced state drom one ID.
+// Safely reading synced state from one ID.
 const getState = id => {
-  if (!_BAZAR_STORE_.hasOwnProperty(id)) throw new Error(`Attempted reading state from ${id}, non-registered component`);
-  return _BAZAR_STORE_[id].sync();
-};
-
-// Safely reading synced state drom multiple IDs.
-// Returns an handy object containing states grouped by ID.
-const getStates = arr => {
-  const states = {};
-  arr.forEach(id => {
-    if (!_BAZAR_STORE_.hasOwnProperty(id)) throw new Error(`Attempted reading state from ${id}, non-registered component`);
-    states[id] = _BAZAR_STORE_[id].sync();
-  });
-  return states;
+  const { sync } = (_BAZAR_STORE_[id] || {});
+  return sync ? sync() : undefined;
 };
 
 // Safely reading initial state. Returns undefined if no initial state is defined
@@ -99,8 +76,11 @@ const initState = id => (_BAZAR_STORE_.initial || {})[id];
 // Must run only one time
 const initStore = (states = {}) => {
   // Evaluating the global execution context.
-  // Useful because e.g. In Node.js you don't have access to a `window` object
-  // but you can create a global store through `global`.
+  // Useful because:
+  // e.g. In Node.js you don't have access to a `window` object
+  // but you can create a global store in `global`.
+  // e.g. in a webWorker you don't have access to a `window` object
+  // but you can create a global store in `self`.
   const context = typeof global !== 'undefined'
     ? global
     : typeof self !== 'undefined'
@@ -123,7 +103,6 @@ export {
   initStore,
   initState,
   getState,
-  getStates,
   register,
   notify,
   poke,

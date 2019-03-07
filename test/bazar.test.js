@@ -63,7 +63,7 @@ describe('Bazar tests', async () => {
     expect(keys[2]).to.be.equal('C2');
   });
 
-  it('Throw if a multiple registration of the same ID is attempted', async () => {
+  it('Throw if a multiple registration of the same ID is attempted (without expliciting a rerender)', async () => {
     const errors = [];
     page.on('pageerror', err => errors.push(err));
     await page.goto(`${server}/throwIfNotUniqueID.html`, {
@@ -76,6 +76,18 @@ describe('Bazar tests', async () => {
     expect(errors[0].message.match('Expected unique id')[0]).to.be.equal('Expected unique id');
   });
 
+  it('Should not throw if a multiple registration of the same ID is attempted (expliciting a rerender)', async () => {
+    const errors = [];
+    page.on('pageerror', err => errors.push(err));
+    await page.goto(`${server}/notThrowIfRerenderIsNotified.html`, {
+      waitUntil: 'networkidle0',
+    });
+
+    await sleep(1000);
+
+    expect(errors).to.be.not.an('error');
+  });
+
   it('Throw if no ID is provided at registration', async () => {
     const errors = [];
     page.on('pageerror', err => errors.push(err));
@@ -86,28 +98,14 @@ describe('Bazar tests', async () => {
     await sleep(1000);
 
     expect(errors[0]).to.be.an('error');
-    expect(errors[0].message.match('Expected registrant to have non-null id value')[0])
-      .to.be.equal('Expected registrant to have non-null id value');
+    expect(errors[0].message.match('Expected non-null id')[0])
+      .to.be.equal('Expected non-null id');
   });
 
-  it('Throw if no SYNC function is provided at registration', async () => {
+  it('Should throw if notify is invoked from element without sync function', async () => {
     const errors = [];
     page.on('pageerror', err => errors.push(err));
-    await page.goto(`${server}/throwIfNotSync.html`, {
-      waitUntil: 'networkidle0',
-    });
-
-    await sleep(1000);
-
-    expect(errors[0]).to.be.an('error');
-    expect(errors[0].message.match('Expected registrant to have a sync function')[0])
-      .to.be.equal('Expected registrant to have a sync function');
-  });
-
-  it('Should throw if notify is invoked withot config object', async () => {
-    const errors = [];
-    page.on('pageerror', err => errors.push(err));
-    await page.goto(`${server}/throwIfNotConfig.html`, {
+    await page.goto(`${server}/throwIfNotSyncOnNotify.html`, {
       waitUntil: 'networkidle0',
     });
 
@@ -116,8 +114,8 @@ describe('Bazar tests', async () => {
     await sleep(1000);
 
     expect(errors[0]).to.be.an('error');
-    expect(errors[0].message.match('config object is required to correctly notify a state update')[0])
-      .to.be.equal('config object is required to correctly notify a state update');
+    expect(errors[0].message.match('Sync is required to notify a state update')[0])
+      .to.be.equal('Sync is required to notify a state update');
   });
 
   it('Should invoke onNotify if a component send a notification', async () => {
@@ -148,61 +146,39 @@ describe('Bazar tests', async () => {
     await sleep(1000);
 
     expect(errors[0]).to.be.an('error');
-    expect(errors[0].message.match('Attempted trigger of undefined onNotify')[0])
-      .to.be.equal('Attempted trigger of undefined onNotify');
+    expect(errors[0].message.match('Triggering undefined onNotify on')[0])
+      .to.be.equal('Triggering undefined onNotify on');
   });
 
-  it('Should return a single state if getState is invoked', async () => {
+  it('Should return a single state if getState is invoked on a registered component', async () => {
     await page.goto(`${server}/getState.html`, {
       waitUntil: 'networkidle0',
     });
 
-    const test = await page.evaluate(() => bazar.getState('C1'));
+    const C1 = await page.evaluate(() => bazar.getState('C1'));
 
-    expect(test).to.be.an('object');
-    expect(test.count).to.be.a('number').to.be.equal(0);
+    expect(C1).to.be.an('object');
+    expect(C1.count).to.be.a('number').to.be.equal(0);
   });
 
-  it('Should return a multiple states if getStates is invoked', async () => {
-    await page.goto(`${server}/getStates.html`, {
-      waitUntil: 'networkidle0',
-    });
-
-    const test = await page.evaluate(() => bazar.getStates(['C1', 'C2']));
-
-    expect(test).to.be.an('object');
-    expect(test.C1).to.be.an('object');
-    expect(test.C2).to.be.an('object');
-    expect(test.C1.count).to.be.a('number').to.be.equal(0);
-    expect(test.C2.count).to.be.a('number').to.be.equal(0);
-  });
-
-  it('Should throw if getState is invoked on non-registered id', async () => {
-    const errors = [];
-    page.on('pageerror', err => errors.push(err));
+  it('Should return undefined if getstate is invoked on non-registered component', async () => {
     await page.goto(`${server}/getState.html`, {
       waitUntil: 'networkidle0',
     });
 
-    await sleep(1000);
+    const C3 = await page.evaluate(() => bazar.getState('C3'));
 
-    expect(errors[0]).to.be.an('error');
-    expect(errors[0].message.match('Attempted reading state from')[0])
-      .to.be.equal('Attempted reading state from');
+    expect(C3).to.be.an('undefined');
   });
 
-  it('Should throw if getStates is invoked on non-registered id', async () => {
-    const errors = [];
-    page.on('pageerror', err => errors.push(err));
-    await page.goto(`${server}/getStates.html`, {
+  it('Should return undefined if getstate is invoked on non-registered component', async () => {
+    await page.goto(`${server}/getStateWithoutSync.html`, {
       waitUntil: 'networkidle0',
     });
 
-    await sleep(1000);
+    const C1 = await page.evaluate(() => bazar.getState('C1'));
 
-    expect(errors[0]).to.be.an('error');
-    expect(errors[0].message.match('Attempted reading state from')[0])
-      .to.be.equal('Attempted reading state from');
+    expect(C1).to.be.an('undefined');
   });
 
   it('Should return undefined when invoking initState on empty store', async () => {
@@ -224,5 +200,36 @@ describe('Bazar tests', async () => {
 
     expect(test).to.be.not.an('undefined');
     expect(test).to.be.equal(1);
+  });
+
+  it('Should pass arg when anonimously poking component', async () => {
+    await page.goto(`${server}/poke.html`, {
+      waitUntil: 'networkidle0',
+    });
+
+    await page.evaluate(() => bazar.poke('C2', 'test'));
+
+    await sleep(100);
+
+    const test = await page.evaluate(() => window.test);
+
+    expect(test).to.be.a('string');
+    expect(test).to.be.equal('test');
+  });
+
+  it('Should throw when poking component without onPoke method', async () => {
+    const errors = [];
+    page.on('pageerror', err => errors.push(err));
+    await page.goto(`${server}/poke.html`, {
+      waitUntil: 'networkidle0',
+    });
+
+    await page.evaluate(() => document.querySelector('#testClick').click());
+
+    await sleep(1000);
+
+    expect(errors[0]).to.be.an('error');
+    expect(errors[0].message.match('Poking component without onPoke method')[0])
+      .to.be.equal('Poking component without onPoke method');
   });
 });

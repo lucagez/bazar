@@ -21,7 +21,7 @@
     // File made for testing purpose
 
 const { Component } = React;
-const { initStore, register, notify } = bazar;
+const { initStore, register, poke } = bazar;
 
 class C1 extends Component {
   constructor() {
@@ -44,7 +44,34 @@ class C1 extends Component {
       <div>
         <h1>Component 1</h1>
         <span>{count}</span>
-        <button id="testClick" onClick={() => this.setState({ count: count + 1 }, () => notify())}>increment</button>
+      </div>
+    );
+  }
+}
+
+class C2 extends Component {
+  constructor() {
+    super();
+    this.state = {
+      count: 0,
+    };
+
+    this.config = {
+      id: 'C2',
+      sync: () => this.state,
+      onPoke: (arg) => window.test = arg,
+    };
+
+    register(this.config);
+  }
+
+  render() {
+    const { count } = this.state;
+    return (
+      <div>
+        <h1>Component 1</h1>
+        <span>{count}</span>
+        <button id="testClick" onClick={() => bazar.poke('C1', 'test')}>click</button>
       </div>
     );
   }
@@ -63,6 +90,7 @@ class App extends Component {
       <div className="App">
         <h1>Parent (:</h1>
         <C1 />
+        <C2 />
       </div>
     );
   }

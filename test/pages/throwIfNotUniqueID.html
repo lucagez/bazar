@@ -44,7 +44,7 @@ class C1 extends Component {
       <div>
         <h1>Component 1</h1>
         <span>{count}</span>
-        <button onClick={() => this.setState({ count: count + 1 }, () => notify(this.config))}>increment</button>
+        <button onClick={() => this.setState({ count: count + 1 }, () => notify('C1'))}>increment</button>
       </div>
     );
   }
@@ -71,7 +71,7 @@ class C2 extends Component {
       <div>
         <h1>Component 1</h1>
         <span>{count}</span>
-        <button onClick={() => this.setState({ count: count + 1 }, () => notify(this.config))}>increment</button>
+        <button onClick={() => this.setState({ count: count + 1 }, () => notify('C2'))}>increment</button>
       </div>
     );
   }
