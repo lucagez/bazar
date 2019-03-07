@@ -2,18 +2,21 @@
  *
  * CONFIG:
  * `config` object is the fundamental part of `bazar`.
- *  It stores the required connections to edict events to the correct elements
+ *  It stores the required connections to issue edicts to the correct elements
  *  and syncing state from every part of your application.
  *  The composing parts of `config` object are:
  * @param {string} id - REQUIRED. Must be unique. Defines, in the global store, the
  *  reference of the element when you register or edict.
- * @param {Function} sync - REQUIRED. Where you return which part of the local state you want
+ * @param {Function} sync - OPTIONAL. Here you are returning which part of the local state you want
  *  to expose in the global store.
  * @param {array} interests - OPTIONAL. Array of watched IDs. When any of the ID edict,
  *  the `onEdict` function is invoked.
  * @param {Function} onEdict - OPTIONAL. Function invoked when any of the IDs specified in
- *  `interests` edict an update. It is invoked with (id, state) as arguments. So you can
+ *  `interests` issue an edict. It is invoked with (id, state) as arguments. So you can
  *  update your local state accordingly to avoid unnecessary re-renders.
+ * @param {Function} onPoke - OPTIONAL. Function invoked when a `poke` function is invoked with
+ *  the id of the current component as first argument. `onPoke` is invoked with an optional argument
+ *  passed from `poke`.
  */
 
 // Looping through global store and invoking `onEdict` on every element that expressed an interest
