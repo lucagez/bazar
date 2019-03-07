@@ -2,25 +2,25 @@
  *
  * CONFIG:
  * `config` object is the fundamental part of `bazar`.
- *  It stores the required connections to notify events to the correct elements
+ *  It stores the required connections to edict events to the correct elements
  *  and syncing state from every part of your application.
  *  The composing parts of `config` object are:
  * @param {string} id - REQUIRED. Must be unique. Defines, in the global store, the
- *  reference of the element when you register or notify.
+ *  reference of the element when you register or edict.
  * @param {Function} sync - REQUIRED. Where you return which part of the local state you want
  *  to expose in the global store.
- * @param {array} interests - OPTIONAL. Array of watched IDs. When any of the ID notify,
- *  the `onNotify` function is invoked.
- * @param {Function} onNotify - OPTIONAL. Function invoked when any of the IDs specified in
- *  `interests` notify an update. It is invoked with (id, state) as arguments. So you can
+ * @param {array} interests - OPTIONAL. Array of watched IDs. When any of the ID edict,
+ *  the `onEdict` function is invoked.
+ * @param {Function} onEdict - OPTIONAL. Function invoked when any of the IDs specified in
+ *  `interests` edict an update. It is invoked with (id, state) as arguments. So you can
  *  update your local state accordingly to avoid unnecessary re-renders.
  */
 
-// Looping through global store and invoking `onNotify` on every element that expressed an interest
+// Looping through global store and invoking `onEdict` on every element that expressed an interest
 // on the ID that provoked a notification.
-const notify = id => {
+const edict = id => {
   const { sync } = _BAZAR_STORE_[id];
-  if (!sync) throw new Error('Sync is required to notify a state update');
+  if (!sync) throw new Error('Sync is required to issue an edict');
   const state = sync();
 
   // preferring forEach over a more functional .filter followed by .map
@@ -33,11 +33,11 @@ const notify = id => {
       if ((_BAZAR_STORE_[currentId].interests || []).indexOf(id) !== -1) {
         const current = _BAZAR_STORE_[currentId];
 
-        const { onNotify } = current;
-        if (!onNotify) throw new Error(`Triggering undefined onNotify on ${currentId}`);
+        const { onEdict } = current;
+        if (!onEdict) throw new Error(`Triggering undefined onEdict on ${currentId}`);
 
         // Directly passing id and state at component level to avoid reading from global
-        onNotify(id, state);
+        onEdict(id, state);
       }
     });
 };
@@ -104,6 +104,6 @@ export {
   initState,
   getState,
   register,
-  notify,
+  edict,
   poke,
 };

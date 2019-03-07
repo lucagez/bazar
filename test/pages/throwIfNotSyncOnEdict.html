@@ -21,7 +21,7 @@
     // File made for testing purpose
 
 const { Component } = React;
-const { initStore, register, notify } = bazar;
+const { initStore, register, edict } = bazar;
 
 class C1 extends Component {
   constructor() {
@@ -43,7 +43,7 @@ class C1 extends Component {
       <div>
         <h1>Component 1</h1>
         <span>{count}</span>
-        <button id="testClick" onClick={() => this.setState({ count: count + 1 }, () => notify('C1'))}>increment</button>
+        <button id="testClick" onClick={() => this.setState({ count: count + 1 }, () => edict('C1'))}>increment</button>
       </div>
     );
   }

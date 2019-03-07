@@ -102,10 +102,10 @@ describe('Bazar tests', async () => {
       .to.be.equal('Expected non-null id');
   });
 
-  it('Should throw if notify is invoked from element without sync function', async () => {
+  it('Should throw if an edict is issued from element without sync method', async () => {
     const errors = [];
     page.on('pageerror', err => errors.push(err));
-    await page.goto(`${server}/throwIfNotSyncOnNotify.html`, {
+    await page.goto(`${server}/throwIfNotSyncOnEdict.html`, {
       waitUntil: 'networkidle0',
     });
 
@@ -114,12 +114,12 @@ describe('Bazar tests', async () => {
     await sleep(1000);
 
     expect(errors[0]).to.be.an('error');
-    expect(errors[0].message.match('Sync is required to notify a state update')[0])
-      .to.be.equal('Sync is required to notify a state update');
+    expect(errors[0].message.match('Sync is required to issue an edict')[0])
+      .to.be.equal('Sync is required to issue an edict');
   });
 
-  it('Should invoke onNotify if a component send a notification', async () => {
-    await page.goto(`${server}/notifyInvokeonNotify.html`, {
+  it('Should invoke onEdict if an interesting component issue an edict', async () => {
+    await page.goto(`${server}/edictInvokeOnEdict.html`, {
       waitUntil: 'networkidle0',
     });
 
@@ -134,10 +134,10 @@ describe('Bazar tests', async () => {
     expect(test).to.be.equal('C1');
   });
 
-  it('Should throw if onNotify is invoked but undefined', async () => {
+  it('Should throw if onEdict is invoked but undefined', async () => {
     const errors = [];
     page.on('pageerror', err => errors.push(err));
-    await page.goto(`${server}/throwIfNotonNotify.html`, {
+    await page.goto(`${server}/throwIfNotOnEdict.html`, {
       waitUntil: 'networkidle0',
     });
 
@@ -146,8 +146,8 @@ describe('Bazar tests', async () => {
     await sleep(1000);
 
     expect(errors[0]).to.be.an('error');
-    expect(errors[0].message.match('Triggering undefined onNotify on')[0])
-      .to.be.equal('Triggering undefined onNotify on');
+    expect(errors[0].message.match('Triggering undefined onEdict on')[0])
+      .to.be.equal('Triggering undefined onEdict on');
   });
 
   it('Should return a single state if getState is invoked on a registered component', async () => {
