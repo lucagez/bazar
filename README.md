@@ -11,17 +11,19 @@
 
 # Bazar
 > `One-to-One` and `One-to-Many` communications between Components.
- 
-Bazar is a global container of connections between components.
+
+Bazar is a **500b** global container of connections between Components.
 It is designed with React in mind, so are the examples. However you can use Bazar with/without any JS framework of choice. 
 
 ## Table of Contents
 
-- [Bazar](#bazar)
+
   - [Table of Contents](#table-of-contents)
   - [Installation](#installation)
   - [Demo](#demo)
   - [TL;DR](#tldr)
+      - [One-to-Many:](#one-to-many)
+      - [One-to-One:](#one-to-one)
   - [Usage](#usage)
       - [Initialize an empty store](#initialize-an-empty-store)
       - [Initialize a non-empty store](#initialize-a-non-empty-store)
@@ -35,6 +37,14 @@ It is designed with React in mind, so are the examples. However you can use Baza
       - [Get (registered) component's state](#get-registered-components-state)
       - [Get state from initialized store.](#get-state-from-initialized-store)
   - [API](#api)
+      - [register](#register)
+      - [initStore](#initstore)
+      - [edict](#edict)
+      - [getState](#getstate)
+      - [initState](#initstate)
+      - [poke](#poke)
+  - [Contributing](#contributing)
+  - [License](#license)
 
 
 ## Installation
@@ -55,12 +65,12 @@ Without:
 
 ## TL;DR
 
-One-to-Many:
+#### One-to-Many:
 1. Some components **(a)**, **(b)** express an `interest` in a registered component **(c)**.
 2. **(c)** updates its state and issue an `edict`.
 3. **(a)** and **(b)** immediately receive the updated **(c)**'s state. 
 
-One-to-One:
+#### One-to-One:
 1. A component **(a)** stores some info useful for the unreachable component **(b)**.
 2. **(a)** can `poke` **(b)** passing the useful info.
 
@@ -95,7 +105,7 @@ initStore({
 
 #### Register a component
 
-The id prop is the only strictly require to register a new component.
+The id prop is the only strictly requirement to register a new component.
 However a component registered like that is useless as it cannot `edict` neither being `poked`.
 
 ```jsx
@@ -173,7 +183,7 @@ const C1 = () => (
 
 #### Register a component: can `getState`
 
-A component with the ability to provide its current state have necessarily to have
+A component with the ability to provide its current state must have
 a valid `sync` method.
 
 ```jsx
@@ -198,7 +208,7 @@ class C1 extends Component {
 
 #### Register a component: `willRerender`
 
-To make the presence of multiple components with the same id obvious, Bazar will throw an error when will find some.
+To make the presence of multiple components with the same id obvious, Bazar will throw an error when will find some duplicates.
 When a component rerender will automatically re-register itself in the global store.
 Pass `willRerender: true` when registering to notify Bazar that the current component will re-register itself.
 
@@ -362,5 +372,70 @@ class A extends Component {
 };
 ```
 
-// from here
 ## API
+
+#### register
+
+Most important part of Bazar as it stores all the required informations to connect all the registered components.
+
+| param     | type     | required | default   | explaination                                                   |
+|-----------|----------|----------|-----------|----------------------------------------------------------------|
+| id        | string   | yes      |           | unique identifier for the registered Component                 |
+| sync      | function | no       | undefined | sync state on request                                          |
+| interests | array    | no       | []        | express interests on Components                                |
+| onEdict   | function | no       | undefined | invoked when a Component in `interests` issue an `edict`       |
+| onPoke    | function | no       | undefined | invoked when `poke` is called providing `id` as first argument |
+
+- `onEdict`: invoked passing (id, state) as arguments.
+- `onPoke`: invoked passing (arg) an optional argument.
+
+#### initStore
+
+Initializing the global store.
+
+| param  | type   | required | default | explaination                                       |
+|--------|--------|----------|---------|----------------------------------------------------|
+| states | object | no       | {}      | Pass the initial states. Available in `initState`. |
+
+#### edict
+
+Issuing an `edict` from a stateful Component.
+
+| param | type   | required | default | explaination                                           |
+|-------|--------|----------|---------|--------------------------------------------------------|
+| id    | string | yes      |         | Identifier of the component that is issuing an `edict` |
+
+#### getState
+
+Safely get the current state from a registered component
+
+| param | type   | required | default | explaination                                                   |
+|-------|--------|----------|---------|----------------------------------------------------------------|
+| id    | string | yes      |         | Returns undefined if no Component or no `sync` method is found |
+
+#### initState
+
+Safely get the initial state at `id`.
+
+| param | type   | required | default | explaination                                           |
+|-------|--------|----------|---------|--------------------------------------------------------|
+| id    | string | yes      |         | Returns undefined if no Component or no state is found |
+
+#### poke
+
+Poking Component passing optional argument.
+
+| param | type         | required | default   | explaination                                             |
+|-------|--------------|----------|-----------|----------------------------------------------------------|
+| id    | string       | yes      |           | Throw Error if the `id` component has no `onPoke` method |
+| arg   | user-defined | no       | undefined | Optional argument to pass to `onPoke`                    |
+
+## Contributing
+
+Every PR is welcomed 🎉 
+If you have ideas on how to improve upon this library don't hesitate to email me at `lucagesmundo@yahoo.it`.
+
+
+## License
+
+MIT.
