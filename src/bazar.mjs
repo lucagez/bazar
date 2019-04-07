@@ -66,7 +66,7 @@ const register = config => {
   // Creating instance
   Object.defineProperty(_BAZAR_STORE_, id, {
     value: { ...config },
-    writable: false,
+    writable: willRerender,
     enumerable: true,
   });
 };
