@@ -17,8 +17,6 @@ It is designed with React in mind, so are the examples. However you can use Baza
 
 ## Table of Contents
 
-
-  - [Table of Contents](#table-of-contents)
   - [Installation](#installation)
   - [Demo](#demo)
   - [TL;DR](#tldr)
@@ -36,10 +34,8 @@ It is designed with React in mind, so are the examples. However you can use Baza
       - [Get state from initialized store.](#get-state-from-initialized-store)
   - [API](#api)
       - [register](#register)
-      - [initStore](#initstore)
       - [edict](#edict)
       - [getState](#getstate)
-      - [initState](#initstate)
       - [poke](#poke)
   - [Contributing](#contributing)
   - [License](#license)
