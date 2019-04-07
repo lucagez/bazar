@@ -12,7 +12,7 @@
 # Bazar
 > `One-to-One` and `One-to-Many` communications between Components.
 
-Bazar is a **500b** global container of connections between Components.
+Bazar is a **400b** (framework agnostic) container of connections between Components.
 It is designed with React in mind, so are the examples. However you can use Bazar with/without any JS framework of choice. 
 
 ## Table of Contents
@@ -25,8 +25,6 @@ It is designed with React in mind, so are the examples. However you can use Baza
       - [One-to-Many:](#one-to-many)
       - [One-to-One:](#one-to-one)
   - [Usage](#usage)
-      - [Initialize an empty store](#initialize-an-empty-store)
-      - [Initialize a non-empty store](#initialize-a-non-empty-store)
       - [Register a component](#register-a-component)
       - [Register a component: can `edict`](#register-a-component-can-edict)
       - [Register a component: can `poke`](#register-a-component-can-poke)
@@ -82,30 +80,8 @@ https://codepen.io/lucagez/full/GeRZeg
 
 Bazar provides `One-to-One` and `One-to-Many` communications between Components through a global store which contains all the required connections to do so.
 In order to accomplish that you have to:
-  1. Initialize a store.
-  2. Register some components.
-  3. Dispatch events (either via `edict` or `poke`).
-
-
-#### Initialize an empty store
-
-```jsx
-import { initStore } from 'bazar';
-
-initStore();
-```
-
-#### Initialize a non-empty store
-
-```jsx
-import { initStore } from 'bazar';
-
-initStore({
-  ID1: {},
-  ID2: {},
-  // ...
-});
-```
+  1. Register some components.
+  2. Dispatch events (either via `edict` or `poke`).
 
 #### Register a component
 
@@ -114,9 +90,7 @@ However a component registered like that is useless as it cannot `edict` neither
 
 ```jsx
 import React, { Component } from 'react';
-import { initStore, register } from 'bazar';
-
-initStore();
+import { register } from 'bazar';
 
 class C1 extends Component {
   constructor() {
@@ -139,9 +113,7 @@ You can choose which part of the state you prefer to keep in `sync`.
 
 ```jsx
 import React, { Component } from 'react';
-import { initStore, register, edict } from 'bazar';
-
-initStore();
+import { register, edict } from 'bazar';
 
 class C1 extends Component {
   constructor() {
@@ -173,9 +145,7 @@ As the `poke` function is anonymously invoked.
 
 ```jsx
 import React, { Component } from 'react';
-import { initStore } from 'bazar';
-
-initStore();
+import { poke } from 'bazar';
 
 const C1 = () => (
   <button 
@@ -192,9 +162,7 @@ a valid `sync` method.
 
 ```jsx
 import React, { Component } from 'react';
-import { initStore, register } from 'bazar';
-
-initStore();
+import { register } from 'bazar';
 
 class C1 extends Component {
   constructor() {
@@ -218,9 +186,7 @@ Pass `willRerender: true` when registering to notify Bazar that the current comp
 
 ```jsx
 import React, { Component } from 'react';
-import { initStore, register } from 'bazar';
-
-initStore();
+import { register } from 'bazar';
 
 class C1 extends Component {
   constructor() {
@@ -248,9 +214,7 @@ As the `onEdict` function comes handy for updating a component's state.
 
 ```jsx
 import React, { Component } from 'react';
-import { initStore, register, edict } from 'bazar';
-
-initStore();
+import { register, edict } from 'bazar';
 
 class A extends Component {
   constructor() {
@@ -300,19 +264,16 @@ class C extends Component {
 #### One-to-One communication
 
 In the following example:
-1. Store initialization.
 1. Registration of 2 (unrelated) components: **(a)**, **(b)**. 
-1. A component **(a)** stores some info useful for the unreachable component **(b)**.
-2. **(a)** can `poke` **(b)** passing the useful info.
+2. A component **(a)** stores some info useful for the unreachable component **(b)**.
+3. **(a)** can `poke` **(b)** passing the useful info.
 
 **note:** This kind of communication is useful between a STATELESS component and a STATEFUL one.
 The `poke` function is completely anonimous, so it can be invoked from an unregistered component.
 
 ```jsx
 import React, { Component } from 'react';
-import { initStore, register, poke } from 'bazar';
-
-initStore();
+import { register, poke } from 'bazar';
 
 const A = (props) => <button onCLick={() => poke('B', props)}>A</button>
 
@@ -335,9 +296,7 @@ Invoking `getState` you can get the current state of the component belonging to 
 
 ```jsx
 import React, { Component } from 'react';
-import { initStore, register, getState } from 'bazar';
-
-initStore();
+import { register, getState } from 'bazar';
 
 const A = (props) => <button onCLick={() => getState('B')}>A</button>
 
@@ -360,7 +319,7 @@ You can provide an initial state for the store. Then you can safely read it from
 
 ```jsx
 import React, { Component } from 'react';
-import { initStore, register, initState } from 'bazar';
+import { register, initState } from 'bazar';
 
 initStore({
   'A': { initialized: true },
@@ -393,14 +352,6 @@ Most important part of Bazar as it stores all the required informations to conne
 - `onEdict`: invoked passing (id, state) as arguments.
 - `onPoke`: invoked passing (arg) an optional argument.
 
-#### initStore
-
-Initializing the global store.
-
-| param  | type   | required | default | explaination                                       |
-|--------|--------|----------|---------|----------------------------------------------------|
-| states | object | no       | {}      | Pass the initial states. Available in `initState`. |
-
 #### edict
 
 Issuing an `edict` from a stateful Component.
@@ -416,14 +367,6 @@ Safely get the current state from a registered component
 | param | type   | required | default | explaination                                                   |
 |-------|--------|----------|---------|----------------------------------------------------------------|
 | id    | string | yes      |         | Returns undefined if no Component or no `sync` method is found |
-
-#### initState
-
-Safely get the initial state at `id`.
-
-| param | type   | required | default | explaination                                           |
-|-------|--------|----------|---------|--------------------------------------------------------|
-| id    | string | yes      |         | Returns undefined if no Component or no state is found |
 
 #### poke
 

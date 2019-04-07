@@ -30,7 +30,6 @@ const _BAZAR_STORE_ = new Object();
 // Looping through global store and invoking `onEdict` on every element that expressed an interest
 // on the ID that provoked a notification.
 const edict = id => {
-  console.log(_BAZAR_STORE_);
   const { sync } = _BAZAR_STORE_[id];
   if (!sync) throw new Error('Sync is required to issue an edict');
   const state = sync();
