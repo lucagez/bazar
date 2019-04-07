@@ -21,7 +21,7 @@
     // File made for testing purpose
 
 const { Component } = React;
-const { initStore, register, edict } = bazar;
+const { register, edict } = bazar;
 
 class C1 extends Component {
   constructor() {
@@ -53,8 +53,6 @@ class App extends Component {
   constructor() {
     super();
     this.state = {};
-
-    initStore();
   }
 
   render() {

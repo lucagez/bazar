@@ -14,6 +14,7 @@ module.exports = {
         "no-use-before-define": "off",
         "no-restricted-globals": "off",
         "no-prototype-builtins": "off",
+        "no-new-object": "off",
         "curly": "off"
     },
     "globals": {

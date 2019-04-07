@@ -19,9 +19,18 @@
  *  passed from `poke`.
  */
 
+// TESTING DIFFERENT APPROACH => using variable scoped in `bazar` global context.
+// You can get rid of `window` or `self` context.
+// NOTE: every function has access to `_BAZAR_STORE_` but you cannot access it from outside
+// => e.g. chrome console.
+// It is now more stable => The store gets re-initialized every time the js file that calls it gets
+// updated.
+const _BAZAR_STORE_ = new Object();
+
 // Looping through global store and invoking `onEdict` on every element that expressed an interest
 // on the ID that provoked a notification.
 const edict = id => {
+  console.log(_BAZAR_STORE_);
   const { sync } = _BAZAR_STORE_[id];
   if (!sync) throw new Error('Sync is required to issue an edict');
   const state = sync();
@@ -56,7 +65,11 @@ const register = config => {
   if (_BAZAR_STORE_.hasOwnProperty(id) && !willRerender) throw new Error('Expected unique id');
 
   // Creating instance
-  _BAZAR_STORE_[id] = { ...config };
+  Object.defineProperty(_BAZAR_STORE_, id, {
+    value: { ...config },
+    writable: false,
+    enumerable: true,
+  });
 };
 
 // The poke function let's you `poke` registered components with a valid `onPoke` function.
@@ -72,39 +85,7 @@ const getState = id => {
   return sync ? sync() : undefined;
 };
 
-// Safely reading initial state. Returns undefined if no initial state is defined
-// for that specific ID.
-const initState = id => (_BAZAR_STORE_.initial || {})[id];
-
-// Must run only one time
-const initStore = (states = {}) => {
-  // Evaluating the global execution context.
-  // Useful because:
-  // e.g. In Node.js you don't have access to a `window` object
-  // but you can create a global store in `global`.
-  // e.g. in a webWorker you don't have access to a `window` object
-  // but you can create a global store in `self`.
-  const context = typeof global !== 'undefined'
-    ? global
-    : typeof self !== 'undefined'
-      ? self
-      : typeof window !== 'undefined'
-        ? window
-        : {};
-
-  context._BAZAR_STORE_ = {};
-
-  // setting up an initial store containing optional initial states
-  _BAZAR_STORE_.initial = {};
-  const initials = Object.keys(states);
-  if (initials.length > 0) initials.forEach(id => {
-    _BAZAR_STORE_.initial[id] = states[id];
-  });
-};
-
 export {
-  initStore,
-  initState,
   getState,
   register,
   edict,

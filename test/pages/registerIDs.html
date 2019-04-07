@@ -21,13 +21,13 @@
     // File made for testing purpose
 
 const { Component } = React;
-const { initStore, register, notify } = bazar;
+const { register } = bazar;
 
 class C1 extends Component {
   constructor() {
     super();
     this.state = {
-      count: 0,
+      who: 'C1'
     };
 
     this.config = {
@@ -43,8 +43,6 @@ class C1 extends Component {
     return (
       <div>
         <h1>Component 1</h1>
-        <span>{count}</span>
-        <button onClick={() => this.setState({ count: count + 1 }, () => notify(this.config))}>increment</button>
       </div>
     );
   }
@@ -54,7 +52,7 @@ class C2 extends Component {
   constructor() {
     super();
     this.state = {
-      count: 0,
+      who: 'C2'
     };
 
     this.config = {
@@ -69,9 +67,7 @@ class C2 extends Component {
     const { count } = this.state;
     return (
       <div>
-        <h1>Component 1</h1>
-        <span>{count}</span>
-        <button onClick={() => this.setState({ count: count + 1 }, () => notify(this.config))}>increment</button>
+        <h1>Component 2</h1>
       </div>
     );
   }
@@ -81,8 +77,6 @@ class App extends Component {
   constructor() {
     super();
     this.state = {};
-
-    initStore();
   }
 
   render() {

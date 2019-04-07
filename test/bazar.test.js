@@ -13,39 +13,15 @@ describe('Bazar tests', async () => {
     await page.close();
   });
 
-  it('Create empty store on initStore', async () => {
-    await page.goto(`${server}/createStore.html`, {
-      waitUntil: 'networkidle0',
-    });
-
-    const store = await page.evaluate(() => window._BAZAR_STORE_);
-    const keys = Object.keys(store);
-    expect(keys).to.be.an('array');
-    expect(keys.length).to.be.equal(1);
-  });
-
-  it('Create NON empty store on initStore with props', async () => {
-    await page.goto(`${server}/createNonEmptyStore.html`, {
-      waitUntil: 'networkidle0',
-    });
-
-    const store = await page.evaluate(() => window._BAZAR_STORE_);
-    const keys = Object.keys(store.initial);
-    expect(keys).to.be.an('array');
-    expect(keys.length).to.be.equal(2);
-  });
-
   it('Register a single ID', async () => {
     await page.goto(`${server}/registerID.html`, {
       waitUntil: 'networkidle0',
     });
 
-    const store = await page.evaluate(() => window._BAZAR_STORE_);
-    const keys = Object.keys(store);
-    expect(keys).to.be.an('array');
-    expect(keys.length).to.be.equal(2);
-    expect(keys[1]).to.be.a('string');
-    expect(keys[1]).to.be.equal('C1');
+    // If C1 respond with its state is successfully registered.
+    const { who } = await page.evaluate(() => window.bazar.getState('C1'));
+    expect(who).to.be.a('string');
+    expect(who).to.be.equal('C1');
   });
 
   it('Register multiple IDs', async () => {
@@ -53,17 +29,20 @@ describe('Bazar tests', async () => {
       waitUntil: 'networkidle0',
     });
 
-    const store = await page.evaluate(() => window._BAZAR_STORE_);
-    const keys = Object.keys(store);
-    expect(keys).to.be.an('array');
-    expect(keys.length).to.be.equal(3);
-    expect(keys[1]).to.be.a('string');
-    expect(keys[1]).to.be.equal('C1');
-    expect(keys[2]).to.be.a('string');
-    expect(keys[2]).to.be.equal('C2');
+    const { who1, who2 } = await page.evaluate(() => ({
+      who1: window.bazar.getState('C1'),
+      who2: window.bazar.getState('C2'),
+    }));
+
+    expect(who1).to.be.an('object');
+    expect(who2).to.be.an('object');
+    expect(who1.who).to.be.a('string');
+    expect(who1.who).to.be.equal('C1');
+    expect(who2.who).to.be.a('string');
+    expect(who2.who).to.be.equal('C2');
   });
 
-  it('Throw if a multiple registration of the same ID is attempted (without expliciting a rerender)', async () => {
+  it('Should throw if a multiple registration of the same ID is attempted (without expliciting a rerender)', async () => {
     const errors = [];
     page.on('pageerror', err => errors.push(err));
     await page.goto(`${server}/throwIfNotUniqueID.html`, {
@@ -76,7 +55,7 @@ describe('Bazar tests', async () => {
     expect(errors[0].message.match('Expected unique id')[0]).to.be.equal('Expected unique id');
   });
 
-  it('Should not throw if a multiple registration of the same ID is attempted (expliciting a rerender)', async () => {
+  it('Should not throw if a multiple registration of the same ID is attempted (explicit rerender)', async () => {
     const errors = [];
     page.on('pageerror', err => errors.push(err));
     await page.goto(`${server}/notThrowIfRerenderIsNotified.html`, {
@@ -88,7 +67,7 @@ describe('Bazar tests', async () => {
     expect(errors).to.be.not.an('error');
   });
 
-  it('Throw if no ID is provided at registration', async () => {
+  it('Should throw if no ID is provided at registration', async () => {
     const errors = [];
     page.on('pageerror', err => errors.push(err));
     await page.goto(`${server}/throwIfNotID.html`, {
@@ -125,7 +104,7 @@ describe('Bazar tests', async () => {
 
     await page.evaluate(() => document.querySelector('#testClick').click());
 
-    await sleep(100);
+    await sleep(1000);
 
     const test = await page.evaluate(() => window.test);
 
@@ -155,7 +134,7 @@ describe('Bazar tests', async () => {
       waitUntil: 'networkidle0',
     });
 
-    const C1 = await page.evaluate(() => bazar.getState('C1'));
+    const C1 = await page.evaluate(() => window.bazar.getState('C1'));
 
     expect(C1).to.be.an('object');
     expect(C1.count).to.be.a('number').to.be.equal(0);
@@ -169,37 +148,6 @@ describe('Bazar tests', async () => {
     const C3 = await page.evaluate(() => bazar.getState('C3'));
 
     expect(C3).to.be.an('undefined');
-  });
-
-  it('Should return undefined if getstate is invoked on non-registered component', async () => {
-    await page.goto(`${server}/getStateWithoutSync.html`, {
-      waitUntil: 'networkidle0',
-    });
-
-    const C1 = await page.evaluate(() => bazar.getState('C1'));
-
-    expect(C1).to.be.an('undefined');
-  });
-
-  it('Should return undefined when invoking initState on empty store', async () => {
-    await page.goto(`${server}/createStore.html`, {
-      waitUntil: 'networkidle0',
-    });
-
-    const test = await page.evaluate(() => bazar.initState('C1'));
-
-    expect(test).to.be.an('undefined');
-  });
-
-  it('Should return a non-null value when invoking initState on non-initially-empty store', async () => {
-    await page.goto(`${server}/createNonEmptyStore.html`, {
-      waitUntil: 'networkidle0',
-    });
-
-    const test = await page.evaluate(() => bazar.initState('C1'));
-
-    expect(test).to.be.not.an('undefined');
-    expect(test).to.be.equal(1);
   });
 
   it('Should pass arg when anonimously poking component', async () => {
