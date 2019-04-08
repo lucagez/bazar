@@ -5,8 +5,9 @@ When developing locally you encounter way fewer bugs when updating files.
 
 # TODO
 
-- [ ] Update the codepen demo to work according to the new API specs.
+- [x] Update the codepen demo to work according to the new API specs.
 - [ ] Investigate possible drawbacks of using a global store like this.
+- [ ] use `new Set()` from interests instead of `[...interests]` => Set.has() is O(1) vs .indexOf which is O(n).
 - [ ] More extensive tests
   - [ ] Register ID test => Should test without using `getState`.
   - [ ] Register IDs test => Should test without using `getState`.
