@@ -6,6 +6,8 @@ When developing locally you encounter way fewer bugs when updating files.
 # TODO
 
 - [x] Update the codepen demo to work according to the new API specs.
+- [ ] ADD feature => destroy `bazar`.
+- [ ] More reliable `poke` => allow poke only from registered components??
 - [ ] Investigate possible drawbacks of using a global store like this.
 - [ ] use `new Set()` from interests instead of `[...interests]` => Set.has() is O(1) vs .indexOf which is O(n).
 - [ ] More extensive tests
