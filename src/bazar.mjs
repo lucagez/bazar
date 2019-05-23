@@ -37,14 +37,12 @@ const edict = id => {
   // preferring forEach over a more functional .filter followed by .map
   // to keep O(n) time complexity when looping through a large store.
   _BAZAR_STORE_
-    .forEach((obj, currentId) => {
+    .forEach((obj) => {
       // Safely accessing store[id].interests.
       // Looping through IDs to check all the components that expressed interest in
       // the state change.
       if (obj.interests.has(id)) {
         const { onEdict } = obj;
-        if (!onEdict) throw new Error(`Triggering undefined onEdict on ${currentId}`);
-
         // Directly passing id and state at component level to avoid reading from global
         onEdict(id, state);
       }
@@ -56,10 +54,11 @@ const edict = id => {
 // Otherwise an error of `Expected unique ID` will be thrown.
 // e.g. in a React component: Call `register` in the `constructor` method.
 const register = config => {
-  const { id, interests = [], willRerender = false } = config;
+  const { id, interests = [], willRerender, onEdict } = config;
 
-  if (!id) throw new Error('Expected non-null id');
+  if (typeof id !== 'string') throw new TypeError('id should be a string');
   if (_BAZAR_STORE_.has(id) && !willRerender) throw new Error('Expected unique id');
+  if (interests.length > 0 && (typeof onEdict !== 'function')) throw new Error('onEdict is required when expressing interests');
 
   // Creating instance
   _BAZAR_STORE_.set(id, {

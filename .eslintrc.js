@@ -15,7 +15,8 @@ module.exports = {
         "no-restricted-globals": "off",
         "no-prototype-builtins": "off",
         "no-new-object": "off",
-        "curly": "off"
+        "curly": "off",
+        "object-curly-newline": "off"
     },
     "globals": {
         "_BAZAR_STORE_": true,

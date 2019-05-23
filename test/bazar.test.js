@@ -77,8 +77,8 @@ describe('Bazar tests', async () => {
     await sleep(1000);
 
     expect(errors[0]).to.be.an('error');
-    expect(errors[0].message.match('Expected non-null id')[0])
-      .to.be.equal('Expected non-null id');
+    expect(errors[0].message.match('id should be a string')[0])
+      .to.be.equal('id should be a string');
   });
 
   it('Should throw if an edict is issued from element without sync method', async () => {
@@ -113,20 +113,18 @@ describe('Bazar tests', async () => {
     expect(test).to.be.equal('C1');
   });
 
-  it('Should throw if onEdict is invoked but undefined', async () => {
+  it('Should throw if component expressing interests registers without onEdict method', async () => {
     const errors = [];
     page.on('pageerror', err => errors.push(err));
     await page.goto(`${server}/throwIfNotOnEdict.html`, {
       waitUntil: 'networkidle0',
     });
 
-    await page.evaluate(() => document.querySelector('#testClick').click());
-
     await sleep(1000);
 
     expect(errors[0]).to.be.an('error');
-    expect(errors[0].message.match('Triggering undefined onEdict on')[0])
-      .to.be.equal('Triggering undefined onEdict on');
+    expect(errors[0].message.match('onEdict is required when expressing interests')[0])
+      .to.be.equal('onEdict is required when expressing interests');
   });
 
   it('Should return a single state if getState is invoked on a registered component', async () => {
