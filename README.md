@@ -12,8 +12,9 @@
 # Bazar
 > `One-to-One` and `One-to-Many` communications between Components.
 
-Bazar is a **400b** (framework agnostic) container of connections between Components.
+Bazar is a **500b** (framework agnostic) container of connections between js Components.
 It is designed with React in mind, so are the examples. However you can use Bazar with/without any JS framework of choice. 
+It has been tested with success in connecting React and Vue components inside the same app.
 
 ## Table of Contents
 
@@ -31,12 +32,13 @@ It is designed with React in mind, so are the examples. However you can use Baza
       - [One-to-Many communication](#one-to-many-communication)
       - [One-to-One communication](#one-to-one-communication)
       - [Get (registered) component's state](#get-registered-components-state)
-      - [Get state from initialized store.](#get-state-from-initialized-store)
+      - [Clearing store](#clearing-store)
   - [API](#api)
       - [register](#register)
       - [edict](#edict)
       - [getState](#getstate)
       - [poke](#poke)
+      - [clearStore](#clearStore)
   - [Contributing](#contributing)
   - [License](#license)
 
@@ -199,11 +201,10 @@ class C1 extends Component {
 #### One-to-Many communication
 
 In the following example:
-1. Store initialization.
-2. Registration of 3 components: **(a)**, **(b)**, **(c)**. 
-3. **(a)**, **(b)** express an `interest` in a registered component **(c)**.
-4. **(c)** updates its state and issue an `edict`.
-5. **(a)** and **(b)** immediately receive the updated **(c)**'s state, via `onEdict`. 
+1. Registration of 3 components: **(a)**, **(b)**, **(c)**. 
+2. **(a)**, **(b)** express an `interest` in a registered component **(c)**.
+3. **(c)** updates its state and issue an `edict`.
+4. **(a)** and **(b)** immediately receive the updated **(c)**'s state, via `onEdict`. 
 
 **note:** Usually this kind of communication is useful between STATEFUL components.
 As the `onEdict` function comes handy for updating a component's state.
@@ -289,6 +290,7 @@ class B extends Component {
 #### Get (registered) component's state
 
 Invoking `getState` you can get the current state of the component belonging to the provided id.
+If the component is not registered `undefined` will be returned.
 
 ```jsx
 import React, { Component } from 'react';
@@ -309,26 +311,21 @@ class B extends Component {
 };
 ```
 
-#### Get state from initialized store.
+#### Clearing store
 
-You can provide an initial state for the store. Then you can safely read it from your components.
+You can clear bazar store at any time.
+Useful if connecting many components that will be repeated many times.
+
+**e.g.** You are connecting widgets of a dashboard. Every widget has an id relative to the dashboard. You render one dashboard at a time but using the same widgets.
+Clearing the store between dashboard renders prevents ID clashes and let's you reuse the same IDs within the dashboard.
 
 ```jsx
 import React, { Component } from 'react';
-import { register, initState } from 'bazar';
+import { clearStore } from 'bazar';
 
-initStore({
-  'A': { initialized: true },
-});
+// Call it without arguments.
+clearStore();
 
-class A extends Component {
-  constructor() {
-    super();
-    // reading initialized state
-    this.state = { empty: initState('A') || true };
-  }
-  render = () => <div>A</div>
-};
 ```
 
 ## API
@@ -372,6 +369,10 @@ Poking Component passing optional argument.
 |-------|--------------|----------|-----------|----------------------------------------------------------|
 | id    | string       | yes      |           | Throw Error if the `id` component has no `onPoke` method |
 | arg   | user-defined | no       | undefined | Optional argument to pass to `onPoke`                    |
+
+#### clearStore
+
+`clearStore` will empty the bazar store. It's called without specifying arguments.
 
 ## Contributing
 
