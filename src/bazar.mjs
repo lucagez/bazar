@@ -41,9 +41,8 @@ const edict = id => {
       // Safely accessing store[id].interests.
       // Looping through IDs to check all the components that expressed interest in
       // the state change.
-      const current = _BAZAR_STORE_.get(currentId);
-      if ((current.interests || []).indexOf(id) !== -1) {
-        const { onEdict } = current;
+      if (obj.interests.has(id)) {
+        const { onEdict } = obj;
         if (!onEdict) throw new Error(`Triggering undefined onEdict on ${currentId}`);
 
         // Directly passing id and state at component level to avoid reading from global
@@ -57,13 +56,19 @@ const edict = id => {
 // Otherwise an error of `Expected unique ID` will be thrown.
 // e.g. in a React component: Call `register` in the `constructor` method.
 const register = config => {
-  const { id, willRerender = false } = config;
+  const { id, interests = [], willRerender = false } = config;
 
   if (!id) throw new Error('Expected non-null id');
   if (_BAZAR_STORE_.has(id) && !willRerender) throw new Error('Expected unique id');
 
   // Creating instance
-  _BAZAR_STORE_.set(id, { ...config });
+  _BAZAR_STORE_.set(id, {
+    ...config,
+
+    // Preferring an array in config for a more user friendly creation.
+    // Preferring a Set for internal use for a faster property retrieval.
+    interests: new Set(interests),
+  });
 };
 
 // The poke function let's you `poke` registered components with a valid `onPoke` function.
