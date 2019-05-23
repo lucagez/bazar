@@ -25,25 +25,24 @@
 // => e.g. chrome console.
 // It is now more stable => The store gets re-initialized every time the js file that calls it gets
 // updated.
-const _BAZAR_STORE_ = new Object();
+const _BAZAR_STORE_ = new Map();
 
 // Looping through global store and invoking `onEdict` on every element that expressed an interest
 // on the ID that provoked a notification.
 const edict = id => {
-  const { sync } = _BAZAR_STORE_[id];
+  const { sync } = _BAZAR_STORE_.get(id);
   if (!sync) throw new Error('Sync is required to issue an edict');
   const state = sync();
 
   // preferring forEach over a more functional .filter followed by .map
   // to keep O(n) time complexity when looping through a large store.
-  Object.keys(_BAZAR_STORE_)
-    .forEach(currentId => {
+  _BAZAR_STORE_
+    .forEach((obj, currentId) => {
       // Safely accessing store[id].interests.
       // Looping through IDs to check all the components that expressed interest in
       // the state change.
-      if ((_BAZAR_STORE_[currentId].interests || []).indexOf(id) !== -1) {
-        const current = _BAZAR_STORE_[currentId];
-
+      const current = _BAZAR_STORE_.get(currentId);
+      if ((current.interests || []).indexOf(id) !== -1) {
         const { onEdict } = current;
         if (!onEdict) throw new Error(`Triggering undefined onEdict on ${currentId}`);
 
@@ -61,26 +60,22 @@ const register = config => {
   const { id, willRerender = false } = config;
 
   if (!id) throw new Error('Expected non-null id');
-  if (_BAZAR_STORE_.hasOwnProperty(id) && !willRerender) throw new Error('Expected unique id');
+  if (_BAZAR_STORE_.has(id) && !willRerender) throw new Error('Expected unique id');
 
   // Creating instance
-  Object.defineProperty(_BAZAR_STORE_, id, {
-    value: { ...config },
-    writable: willRerender,
-    enumerable: true,
-  });
+  _BAZAR_STORE_.set(id, { ...config });
 };
 
 // The poke function let's you `poke` registered components with a valid `onPoke` function.
 const poke = (id, arg) => {
-  const { onPoke } = (_BAZAR_STORE_[id] || {});
+  const { onPoke } = (_BAZAR_STORE_.get(id) || {});
   if (!onPoke) throw new Error('Poking component without onPoke method');
   onPoke(arg);
 };
 
 // Safely reading synced state from one ID.
 const getState = id => {
-  const { sync } = (_BAZAR_STORE_[id] || {});
+  const { sync } = (_BAZAR_STORE_.get(id) || {});
   return sync ? sync() : undefined;
 };
 
