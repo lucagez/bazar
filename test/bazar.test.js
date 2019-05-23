@@ -180,4 +180,24 @@ describe('Bazar tests', async () => {
     expect(errors[0].message.match('Poking component without onPoke method')[0])
       .to.be.equal('Poking component without onPoke method');
   });
+
+  it('Should clear store', async () => {
+    await page.goto(`${server}/getState.html`, {
+      waitUntil: 'networkidle0',
+    });
+
+    const C1 = await page.evaluate(() => bazar.getState('C1'));
+
+    // Reading a state before/after bazar clearing
+
+    expect(C1).to.be.an('object');
+    expect(C1.count).to.be.equal(0);
+
+    const C1after = await page.evaluate(() => {
+      bazar.clearStore();
+      return bazar.getState('C1');
+    });
+
+    expect(C1after).to.be.an('undefined');
+  });
 });

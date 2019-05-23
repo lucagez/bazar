@@ -84,9 +84,16 @@ const getState = id => {
   return sync ? sync() : undefined;
 };
 
+// Useful when using bazar for connecting components in a repeating environment.
+// e.g. Using bazar to connect the widgets of a dashboard. But there are `n` dashboards
+// made with the same widgets that render different data.
+// Before registering the new widgets you can clear the store to prevent ID clashes.
+const clearStore = () => _BAZAR_STORE_.clear();
+
 export {
   getState,
   register,
   edict,
   poke,
+  clearStore,
 };
