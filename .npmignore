@@ -4,3 +4,8 @@ test/
 .travis.yml
 start_server.sh
 .eslintignore
+logo.svg
+README.md
+bazar.xml
+.eslitrc.js
+messages-for-my-future-self.md
