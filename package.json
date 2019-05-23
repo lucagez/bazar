@@ -1,6 +1,6 @@
 {
   "name": "bazar",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "description": "State container",
   "main": "dist/bazar.js",
   "module": "dist/bazar.mjs",
