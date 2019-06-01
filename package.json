@@ -35,14 +35,14 @@
   "homepage": "https://github.com/lucagez/bazar#readme",
   "devDependencies": {
     "babel-eslint": "^10.0.1",
-    "browser-sync": "^2.26.3",
+    "browser-sync": "^2.26.5",
     "chai": "^4.2.0",
-    "eslint": "^5.15.0",
+    "eslint": "^5.16.0",
     "eslint-config-airbnb-base": "^13.1.0",
-    "eslint-plugin-import": "^2.16.0",
+    "eslint-plugin-import": "^2.17.3",
     "lodash": "^4.17.11",
-    "microbundle": "^0.9.0",
+    "microbundle": "^0.11.0",
     "mocha": "^5.2.0",
-    "puppeteer": "^1.13.0"
+    "puppeteer": "^1.17.0"
   }
 }
