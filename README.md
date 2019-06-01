@@ -52,7 +52,7 @@ With NPM:
 
 Without:
 ```html
-  <script src="https://unpkg.com/bazar@0.4.0/dist/bazar.js"></script>
+  <script src="https://unpkg.com/bazar@0.5.2/dist/bazar.js"></script>
 ```
 
 ## Demo
